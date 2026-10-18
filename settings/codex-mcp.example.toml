@@ -1,0 +1,6 @@
+# Copy to ignored .codex/config.toml and replace the absolute backend path.
+[mcp_servers.ohlcv_replay]
+command = "uv"
+args = ["--directory", "C:/absolute/path/to/ohlcv-replay/backtest_engine", "run", "backtest-mcp", "--url", "http://127.0.0.1:8765"]
+startup_timeout_sec = 120
+tool_timeout_sec = 120

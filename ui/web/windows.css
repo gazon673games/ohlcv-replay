@@ -1,0 +1,60 @@
+.app-shell.floating-workspace { display: block; position: relative; overflow: hidden; }
+.layout-tools { flex-wrap: wrap; max-width: 100%; }
+.layout-tools .result-tabs { flex-wrap: wrap; gap: 3px; border: 0; }
+#windowDeck { position: absolute; inset: 0 0 34px; overflow: hidden; }
+#windowSurface { position: absolute; inset: 0; transform-origin: 0 0; }
+.workspace-panning, .workspace-panning * { cursor: grabbing !important; user-select: none; }
+/* Keep chart hit testing and backing buffers in screen coordinates under desktop zoom. */
+#windowSurface .market-chart, #windowSurface .multi-chart-canvas {
+  zoom: calc(1 / var(--workspace-scale, 1));
+}
+#windowTaskbar { position: absolute; inset: auto 0 0; height: 34px; display: flex; gap: 4px;
+  padding: 3px 6px; overflow-x: auto; background: var(--surface-soft); border-top: 1px solid var(--border); }
+#windowTaskbar button { flex: 0 0 auto; font-size: 11px; padding: 3px 8px; }
+#windowTaskbar button.active { border-color: var(--accent); }
+#workspaceZoomReset { position: sticky; left: 0; z-index: 1; min-width: 52px; }
+.workbench-window { position: absolute; display: flex; flex-direction: column; min-width: 0;
+  border: 1px solid var(--border-strong); background: var(--surface); box-shadow: 0 4px 18px #0005; overflow: hidden; }
+.workbench-window[hidden] { display: none; }
+.window-titlebar { display: flex; align-items: center; gap: 3px; flex: 0 0 30px; padding-left: 8px;
+  padding-right: calc(5px / var(--workspace-scale, 1)); background: var(--surface-soft);
+  border-bottom: 1px solid var(--border); cursor: move; touch-action: none; user-select: none; }
+.window-titlebar strong { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; }
+.window-titlebar button { width: 29px; height: 26px; min-height: 0; padding: 0; border: 0; background: transparent; color: var(--text); }
+#windowTaskbar button { background: var(--surface); color: var(--text-soft); }
+#windowTaskbar button.active { background: var(--accent-soft); color: var(--accent); }
+.window-titlebar button:hover { background: var(--accent-soft); }
+.window-titlebar button:last-child:hover { background: #b63b3b; color: white; }
+.window-body { flex: 1; display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: auto; }
+.window-body > .market-stage { flex: 1; width: 100%; padding: 4px; }
+.window-body > .setup-pane, .window-body > .editor-pane { width: 100%; margin: 0; }
+.window-body > .result-view { display: block; flex: 1; padding: 10px; overflow: auto; }
+.window-resize { position: absolute; z-index: 2; width: calc(16px / var(--workspace-scale, 1));
+  height: calc(16px / var(--workspace-scale, 1)); touch-action: none;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 75% 100%, 75% 25%, 0 25%);
+  background: var(--border-strong); cursor: nesw-resize; }
+.window-resize:hover, .window-resize:focus-visible { background: var(--accent); }
+.window-resize[data-corner="ne"] { top: 0; right: 0; }
+.window-resize[data-corner="nw"] { top: 0; left: 0; transform: rotate(-90deg); cursor: nwse-resize; }
+.window-resize[data-corner="se"] { bottom: 0; right: 0; transform: rotate(90deg); cursor: nwse-resize; }
+.window-resize[data-corner="sw"] { bottom: 0; left: 0; transform: rotate(180deg); }
+.maximized .window-resize { display: none; }
+.floating-workspace > .workspace, .floating-workspace > .resize-handle, .floating-workspace > .result-dock { display: none !important; }
+.multi-chart { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+.multi-chart-toolbar { display: flex; align-items: center; gap: 6px; padding: 6px; }
+.multi-chart-toolbar select { flex: 1; min-width: 0; margin: 0; }
+.multi-chart-canvas { flex: 1; min-height: 100px; }
+.portfolio-panel { padding: 12px; overflow: auto; }
+.portfolio-panel label { display: block; margin-bottom: 6px; }
+.portfolio-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.portfolio-leg { margin: 10px 0; padding: 8px; border: 1px solid var(--border); }
+.portfolio-leg textarea { min-height: 140px; font: 12px Consolas, monospace; width: 100%; }
+.portfolio-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.portfolio-error { color: var(--danger, #e36d63); white-space: pre-wrap; }
+.portfolio-report { padding: 12px; overflow: auto; }
+.portfolio-report canvas { width: 100%; height: 220px; }
+.portfolio-report [data-metrics] { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.portfolio-metric { display: flex; flex-direction: column; gap: 5px; padding: 10px; background: var(--surface-soft); }
+.portfolio-metric span { color: var(--text-soft); font-size: 11px; }
+.portfolio-report .fill-table { overflow: auto; max-height: 320px; }
+@media (max-width: 700px) { .portfolio-fields { grid-template-columns: 1fr; } }

@@ -1,0 +1,105 @@
+:root[data-theme="grimdark"] {
+  color-scheme: dark;
+  --paint-darkness: #21252C;
+  --paint-ivory-white: #F6E2BD;
+  --paint-ironclad-grey: #323438;
+  --paint-moonbeam-yellow: #F0B81D;
+  --paint-blighted-green: #1E2C2D;
+  --paint-banshee-brown: #342B28;
+  --paint-bloodmoon-red: #C63130;
+  --paint-warm-skin-shade: #73573D;
+  --paint-grimdark-shadow: #40403A;
+  --paint-emperor-gold: #5A4427;
+  --paint-fiery-vermilion: #B01A11;
+  --paint-blanched-berry: #37232B;
+  --paint-sunburst-ochre: #714529;
+  --paint-midnight-olive: #31352C;
+  --paint-tainted-garden: #3E3E2A;
+  --paint-ruddy-terra: #804339;
+  --paint-turnbull-turquoise: #3A4C53;
+  --paint-voodoo-shade: #50422B;
+  --paint-grim-rust: #3B230D;
+  --paint-heavy-metal: #3E3E3E;
+
+  --page: var(--paint-blighted-green);
+  --surface: var(--paint-darkness);
+  --surface-soft: var(--paint-ironclad-grey);
+  --surface-raised: var(--paint-banshee-brown);
+  --text: var(--paint-ivory-white);
+  --text-soft: var(--paint-ivory-white);
+  --border: var(--paint-grimdark-shadow);
+  --border-strong: var(--paint-warm-skin-shade);
+  --grid: var(--paint-heavy-metal);
+  --input: var(--paint-darkness);
+  --input-readonly: var(--paint-midnight-olive);
+  --accent: var(--paint-moonbeam-yellow);
+  --accent-hover: var(--paint-ivory-white);
+  --accent-soft: var(--paint-emperor-gold);
+  --on-accent: var(--paint-darkness);
+  --on-status: var(--paint-ivory-white);
+  --success: var(--paint-tainted-garden);
+  --warning: var(--paint-sunburst-ochre);
+  --warning-text: var(--paint-moonbeam-yellow);
+  --danger: var(--paint-fiery-vermilion);
+  --danger-text: var(--paint-ivory-white);
+  --danger-soft: var(--paint-blanched-berry);
+  --price-up: var(--paint-moonbeam-yellow);
+  --price-down: var(--paint-bloodmoon-red);
+  --equity: var(--paint-ivory-white);
+  --tooltip: var(--paint-grim-rust);
+  --tooltip-text: var(--paint-ivory-white);
+  --shadow: color-mix(in srgb, var(--paint-darkness) 75%, transparent);
+  --position-long: var(--paint-moonbeam-yellow);
+  --position-flat: var(--paint-ivory-white);
+  --position-short: var(--paint-bloodmoon-red);
+  --drawdown: var(--paint-bloodmoon-red);
+  --marker-long: var(--paint-moonbeam-yellow);
+  --marker-short: var(--paint-ivory-white);
+  --chart-1: var(--paint-moonbeam-yellow);
+  --chart-2: var(--paint-ivory-white);
+  --chart-3: var(--paint-bloodmoon-red);
+  --chart-4: var(--paint-warm-skin-shade);
+  --chart-5: var(--paint-ruddy-terra);
+  --chart-6: var(--paint-turnbull-turquoise);
+  --cost-total: var(--paint-bloodmoon-red);
+  --cost-commission: var(--paint-moonbeam-yellow);
+  --cost-slippage: var(--paint-ivory-white);
+  --cost-spread: var(--paint-ruddy-terra);
+  --indicator-sma: var(--paint-ivory-white);
+  --indicator-ema: var(--paint-moonbeam-yellow);
+  --indicator-bollinger: var(--paint-warm-skin-shade);
+  --indicator-volume: var(--paint-turnbull-turquoise);
+  --indicator-inflation: var(--paint-ruddy-terra);
+  --indicator-capital: var(--paint-moonbeam-yellow);
+  scrollbar-color: var(--paint-warm-skin-shade) var(--paint-darkness);
+  accent-color: var(--paint-moonbeam-yellow);
+}
+
+:root[data-theme="grimdark"] .topbar { background: var(--paint-ironclad-grey); }
+:root[data-theme="grimdark"] .setup-pane { background: var(--paint-blighted-green); }
+:root[data-theme="grimdark"] .setup-pane .pane-title { background: var(--paint-midnight-olive); }
+:root[data-theme="grimdark"] .editor-toolbar,
+:root[data-theme="grimdark"] .parameter-grid { background: var(--paint-banshee-brown); }
+:root[data-theme="grimdark"] .strategy-meta { background: var(--paint-ironclad-grey); }
+:root[data-theme="grimdark"] .metric { background: var(--paint-tainted-garden); }
+:root[data-theme="grimdark"] .metric-danger {
+  background: var(--paint-blanched-berry);
+  border-left-color: var(--paint-ruddy-terra);
+}
+:root[data-theme="grimdark"] .position-short {
+  color: var(--paint-ivory-white);
+  border-bottom: 2px solid var(--paint-bloodmoon-red);
+}
+:root[data-theme="grimdark"] .table-grid th { background: var(--paint-voodoo-shade); }
+:root[data-theme="grimdark"] .table-grid tbody tr:hover { background: var(--paint-turnbull-turquoise); }
+:root[data-theme="grimdark"] .result-tabs .tab.active { background: var(--paint-emperor-gold); }
+:root[data-theme="grimdark"] .badge { border: 1px solid var(--paint-heavy-metal); }
+:root[data-theme="grimdark"] .badge.approved,
+:root[data-theme="grimdark"] .badge.completed { border-color: var(--paint-warm-skin-shade); }
+:root[data-theme="grimdark"] input:disabled,
+:root[data-theme="grimdark"] select:disabled { background: var(--paint-grim-rust); }
+:root[data-theme="grimdark"] :focus-visible { outline-color: var(--paint-moonbeam-yellow); }
+:root[data-theme="grimdark"] ::selection {
+  color: var(--paint-ivory-white);
+  background: var(--paint-turnbull-turquoise);
+}

@@ -1,0 +1,12 @@
+[submodule "backtest_engine"]
+	path = backtest_engine
+	url = https://github.com/gazon673games/backtest-engine.git
+[submodule "continuous_futures_builder"]
+	path = continuous_futures_builder
+	url = https://github.com/gazon673games/continuous-futures-builder.git
+[submodule "data_store"]
+	path = data_store
+	url = https://github.com/gazon673games/ohlcv-data-store.git
+[submodule "moex_iss_adapter"]
+	path = moex_iss_adapter
+	url = https://github.com/gazon673games/moex-iss-adapter.git

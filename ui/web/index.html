@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OHLCV Replay Workbench</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/theme_grimdark.css" />
+    <link rel="stylesheet" href="/workspace.css" />
+    <link rel="stylesheet" href="/windows.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand"><strong>OHLCV Replay</strong><span>Strategy Workbench</span></div>
+      <nav class="layout-tools" aria-label="Workspace">
+        <button id="portfolioWindowButton" class="secondary compact">Портфель</button>
+        <button id="newChartWindowButton" class="secondary compact">+ График</button>
+        <button id="tileWindowsButton" class="secondary compact" title="Разложить открытые окна">Плитка</button>
+        <button id="cascadeWindowsButton" class="secondary compact">Каскад</button>
+        <button class="secondary compact" data-panel="data" data-panel-toggle="true" data-ux="dataPanel" aria-controls="dataPanel">Данные и настройки</button>
+        <button class="secondary compact" data-panel="strategy" data-panel-toggle="true" data-ux="strategyPanel" aria-controls="strategyPanel">Стратегия</button>
+      </nav>
+      <div class="top-actions">
+        <button id="runButton" disabled data-i18n="runStrategy" title="Ctrl+Enter">Запустить стратегию</button>
+        <details class="settings-menu">
+          <summary data-ux="appPreferences">Настройки приложения</summary>
+          <div class="settings-popover">
+            <label><span data-i18n="language">Язык</span>
+              <select id="localeSelect"><option value="ru">Русский</option><option value="en">English</option></select>
+            </label>
+            <label><span data-i18n="theme">Тема</span>
+              <select id="themeSelect"><option value="light" data-i18n="light">Светлая</option><option value="dark" data-i18n="dark">Тёмная</option><option value="grimdark" data-i18n="grimdark">Grimdark</option></select>
+            </label>
+            <div class="settings-divider"></div>
+            <label class="check-inline"><input id="proxyEnabled" type="checkbox" /><span data-i18n="proxyEnabled">Использовать прокси</span></label>
+            <label><span data-i18n="proxyAddress">Адрес прокси</span><input id="proxyUrl" value="localhost:10808" spellcheck="false" /></label>
+            <p class="settings-hint" data-i18n="proxyHint">Адрес без схемы используется как HTTP/mixed proxy.</p>
+            <span class="settings-caption" data-i18n="proxyAdapters">Адаптеры через прокси</span>
+            <label class="check-inline"><input id="proxyAllAdapters" type="checkbox" /><span data-i18n="allAdapters">Все адаптеры</span></label>
+            <div id="proxyAdapterList" class="proxy-adapter-list"></div>
+            <button id="proxySaveButton" type="button" class="wide compact" data-i18n="saveProxy">Сохранить прокси</button>
+            <p id="proxyStatus" class="settings-status" aria-live="polite"></p>
+          </div>
+        </details>
+        <span id="jobBadge" class="badge" data-i18n="idle">ожидание</span>
+        <button id="cancelButton" class="secondary compact" disabled data-i18n="cancel">Отменить</button>
+      </div>
+    </header>
+
+    <main id="appShell" class="app-shell">
+      <section class="market-stage">
+        <div class="stage-toolbar">
+          <div class="market-heading">
+            <button id="marketTitle" class="market-symbol secondary" data-i18n="chooseInstrument" data-ux-title="sourcePeriod">Выберите инструмент</button>
+            <span id="marketSubtitle" data-i18n="chooseInstrumentHint">График загрузится от начала периода к концу</span>
+          </div>
+          <div id="chartTools" class="chart-tools">
+            <label class="compact-field"><span data-i18n="chartTimeframe">График</span><select id="chartTimeframeSelect" data-i18n-title="chartTimeframe"></select></label>
+            <details class="indicator-menu">
+              <summary><span data-i18n="indicators">Индикаторы</span><span id="indicatorCount" class="badge">0</span></summary>
+              <div class="indicator-popover">
+                <div class="indicator-row three"><label class="check-inline"><input id="showSma" type="checkbox" /><span data-i18n="sma">SMA</span></label><label class="compact-field"><span data-i18n="period">Период</span><input id="chartSmaPeriod" type="number" value="20" min="1" /></label><label class="color-field"><span data-i18n="color">Цвет</span><input id="smaColor" type="color" value="#2b67a0" /></label></div>
+                <div class="indicator-row three"><label class="check-inline"><input id="showEma" type="checkbox" /><span data-i18n="ema">EMA</span></label><label class="compact-field"><span data-i18n="period">Период</span><input id="chartEmaPeriod" type="number" value="20" min="1" /></label><label class="color-field"><span data-i18n="color">Цвет</span><input id="emaColor" type="color" value="#ff9800" /></label></div>
+                <div class="indicator-row four"><label class="check-inline"><input id="showBollinger" type="checkbox" /><span data-i18n="bollinger">Bollinger</span></label><label class="compact-field"><span data-i18n="period">Период</span><input id="bollingerPeriod" type="number" value="20" min="1" /></label><label class="compact-field"><span data-i18n="deviation">σ</span><input id="bollingerStdDev" type="number" value="2" min="0.1" step="0.1" /></label><label class="color-field"><span data-i18n="color">Цвет</span><input id="bollingerColor" type="color" value="#9c4dcc" /></label></div>
+                <div class="indicator-row two"><label class="check-inline"><input id="showVolume" type="checkbox" /><span data-i18n="volume">Объём</span></label><label class="color-field"><span data-i18n="color">Цвет</span><input id="volumeColor" type="color" value="#26a69a" /></label></div>
+                <div class="indicator-row four"><label class="check-inline"><input id="showInflation" type="checkbox" /><span data-i18n="inflation">Инфляция</span></label><label class="compact-field"><span data-i18n="annualRate">% в год</span><input id="inflationRate" type="number" value="8" step="0.1" /></label><label class="color-field"><span data-i18n="price">Цена</span><input id="inflationColor" type="color" value="#d97706" /></label><label class="color-field"><span data-i18n="capital">Капитал</span><input id="inflationCapitalColor" type="color" value="#22a06b" /></label></div>
+                <p data-i18n="indicatorHint">Периоды считаются в таймфрейме графика. Инфляция также показывается рядом с капиталом.</p>
+                <p id="indicatorStatus" class="indicator-status" aria-live="polite"></p>
+              </div>
+            </details>
+            <button id="zoomOutButton" class="icon-button secondary" data-ux-title="zoomOut">−</button>
+            <button id="zoomInButton" class="icon-button secondary" data-ux-title="zoomIn">+</button>
+            <button id="autoScaleButton" class="secondary compact" data-ux="autoScale">Автошкала цены</button>
+            <button id="crosshairButton" class="secondary compact" data-ux="crosshair" aria-pressed="true">Перекрестие</button>
+            <button id="resetChartButton" class="secondary compact" data-ux="resetChart">Весь период</button>
+            <button id="focusChartButton" class="secondary compact" data-ux="focusChart" aria-pressed="false">Фокус на графике</button>
+            <details class="shortcut-menu"><summary data-ux="shortcutHelp">Горячие клавиши</summary><p data-ux="shortcutText"></p></details>
+          </div>
+        </div>
+        <div class="chart-progress"><progress id="workspaceProgress" max="1" value="0"></progress><span id="chartProgressLabel" data-i18n="noData">Данные пока не выбраны</span></div>
+        <div class="primary-chart">
+          <div id="chartReadout" class="chart-readout" aria-live="off"></div>
+          <div class="chart-legend price-legend"><i class="legend-price"></i><span data-i18n="marketLegend">Цена и исполнения</span></div>
+          <div class="chart-legend equity-legend"><i class="legend-equity"></i><span data-i18n="equityLegend">Капитал стратегии / инфляционный ориентир</span></div>
+          <div id="marketChart" class="market-chart" tabindex="0" aria-label="Market price and strategy equity chart"></div>
+          <div id="chartEmptyState" class="chart-empty"><div class="empty-card">
+            <p id="chartEmptyMessage" data-i18n="chartEmpty">Выберите источник, инструмент и период</p>
+            <button id="emptyLoadButton" data-ux="loadChart">Загрузить график</button>
+            <button id="emptyChooseButton" class="secondary" data-ux="chooseData">Выбрать инструмент и период</button>
+            <p data-ux="autoDataHint"></p>
+          </div></div>
+        </div>
+        <div id="chartTooltip" class="chart-tooltip hidden"></div>
+      </section>
+
+      <div id="sidebarResize" class="resize-handle sidebar-resize" role="separator" tabindex="0" aria-orientation="vertical" aria-valuemin="340" aria-valuemax="800" data-ux-title="sidebarSize"></div>
+      <section id="workspacePanel" class="workspace">
+        <div class="sidebar-heading">
+          <strong id="panelTitle"></strong>
+          <button id="expandEditorButton" class="secondary compact" data-ux="expandEditor" aria-pressed="false" hidden>Расширить редактор</button>
+          <button id="returnChartButton" class="secondary compact" data-ux="returnChart" hidden>К графику</button>
+          <button id="closePanelButton" class="icon-button secondary" data-ux-title="closePanel">×</button>
+        </div>
+        <aside id="dataPanel" class="pane setup-pane">
+          <div class="selection-flow">
+            <div class="source-grid two">
+              <label><span><b class="step-number">1</b><span data-i18n="source">Источник</span></span><select id="adapterSelect"></select></label>
+              <label><span><b class="step-number">2</b><span data-i18n="instrumentType">Тип инструмента</span></span><select id="engineSelect"></select></label>
+            </div>
+            <label><span><b class="step-number">3</b><span data-i18n="instrument">Фьючерс / пара</span></span><select id="instrumentSelect"></select></label>
+            <div class="source-grid two">
+              <label><span><b class="step-number">4</b><span data-i18n="startDate">Дата начала</span></span><input id="dataFromDate" type="date" /></label>
+              <label><span><b class="step-number">4</b><span data-i18n="endDate">Дата окончания</span></span><input id="dataTillDate" type="date" /></label>
+            </div>
+            <p id="dateRangeNote" class="source-note"></p>
+          </div>
+          <div class="technical-fields hidden">
+            <select id="marketSelect"></select><select id="boardSelect"></select>
+            <label id="instrumentModeField"><select id="instrumentMode"></select></label>
+            <input id="instrumentSearch" value="" /><button id="loadInstrumentsButton" type="button">Refresh instruments</button>
+          </div>
+          <p class="source-note" data-ux="autoDataHint">График загружается автоматически. Сохранённые данные используются сразу, недостающий период догружается.</p>
+          <button id="buildDatasetButton" class="wide primary-load" data-ux="refreshChart">Обновить график</button>
+          <div id="sourceLatency" class="source-note"></div>
+          <div id="dataError" class="inline-error hidden" role="alert"></div>
+
+          <div class="run-basics">
+            <label><span data-i18n="capital">Капитал</span><input id="initialCapital" type="text" inputmode="numeric" value="1000000" /></label>
+          </div>
+          <p id="strategyContractNote" class="contract-note" data-i18n="strategyContract">Таймфрейм, время решений и контракты задаются только кодом стратегии.</p>
+
+          <div class="quality-line"><label class="check-inline"><input id="requireQualityGate" type="checkbox" checked /><span data-ux="requireCheckedData">Только проверенные данные</span></label></div>
+          <p id="qualityModeNote" class="source-note"></p>
+          <details id="qualityDetails">
+            <summary data-ux="dataDetails">Сохранённые данные и качество</summary>
+            <button id="refreshDatasetsButton" class="secondary compact" data-i18n="refreshLibrary">Обновить библиотеку</button>
+            <label><span data-i18n="dataset">Датасет</span><select id="datasetSelect"></select></label>
+            <div class="source-grid two">
+              <label id="cachePolicyField"><span data-i18n="cache">Кэш</span><select id="cachePolicy"></select></label>
+              <label id="rollRuleField"><span data-i18n="rollRule">Правило роллирования</span><select id="rollRule"></select></label>
+            </div>
+            <label><span data-i18n="datasetPath">Путь к датасету</span><input id="datasetPath" /></label>
+            <div id="rulesArchiveField" class="hidden">
+              <label><span data-i18n="rulesArchive">Архив торговых правил</span><input id="rulesPath" /></label>
+              <label><span data-i18n="rulesMode">Проверка торговых правил</span><select id="rulesEnforcement"><option value="strict" data-i18n="rulesStrict">Исторические правила обязательны</option><option value="audit" data-i18n="rulesAudit">Загрузить с аудитом</option></select></label>
+              <label><span data-i18n="historySource">Источник истории</span><select id="historySource"><option value="auto" data-i18n="historyAuto">Архивы и API</option><option value="rest">REST API</option><option value="archive" data-i18n="historyArchive">Архивы; API для свежих данных</option></select></label>
+              <label id="archiveFallbackField" class="hidden"><span data-i18n="archiveFallback">Неполные архивы</span><select id="archiveFallbackPolicy"></select></label>
+            </div>
+            <label><span data-i18n="approval">Approval</span><input id="qualityApprovalPath" readonly /></label>
+            <label><span data-i18n="registry">Реестр инструментов</span><input id="instrumentRegistryPath" readonly /></label>
+            <label><span data-i18n="calendar">Календарь</span><input id="calendarPath" readonly /></label>
+            <input id="catalogPath" type="hidden" /><input id="datasetId" type="hidden" />
+            <pre id="qualityBox" class="audit-box"></pre>
+          </details>
+
+          <details>
+            <summary data-i18n="engineRisk">Движок, сессии и риск</summary>
+            <div class="source-grid two">
+              <label><span data-i18n="runId">Run id</span><input id="runId" data-i18n-placeholder="automatic" placeholder="автоматически" /></label>
+              <label><span data-i18n="session">Сессия</span><select id="sessionFilter"><option value="all" data-i18n="allSessions">все</option><option value="main" data-i18n="mainSession">основная</option><option value="evening" data-i18n="eveningSession">вечерняя</option></select></label>
+              <label><span data-i18n="maxLeverage">Макс. плечо</span><input id="maxLeverage" type="number" step="0.1" /></label>
+              <label><span data-i18n="maxMargin">Макс. использование маржи</span><input id="maxMarginUsage" type="number" step="0.05" /></label>
+              <label><span data-i18n="baseCurrency">Валюта портфеля (пусто — автоматически)</span><input id="baseCurrency" /></label>
+              <label><span data-i18n="accountLeverage">Плечо счёта</span><input id="accountLeverage" type="number" min="1" value="1" step="0.1" /></label>
+              <label><span data-i18n="marginMode">Режим маржи</span><select id="marginMode"><option value="cross">Cross</option><option value="isolated">Isolated</option></select></label>
+              <label><span data-i18n="annualDays">Дней в году (пусто — автоматически)</span><input id="tradingDaysPerYear" type="number" min="1" /></label>
+              <label><span data-i18n="liquidityRole">Комиссия по архиву правил</span><select id="liquidityRole"><option value="taker">Taker</option><option value="maker">Maker</option></select></label>
+            </div>
+          </details>
+
+          <details>
+            <summary data-i18n="executionModel">Модель исполнения</summary>
+            <label><span data-i18n="timing">Момент исполнения</span><select id="executionTiming"><option value="signal_close_to_next_bar_close" data-i18n="nextClose">закрытие следующего бара</option><option value="signal_close_to_next_bar_open_to_close" data-i18n="nextOpen">открытие следующего бара</option><option value="signal_close_to_same_close" data-i18n="signalClose">закрытие сигнального бара</option></select></label>
+            <div class="source-grid three">
+              <label><span data-i18n="commission">Комиссия, bps</span><input id="commissionBps" type="number" value="0" step="0.1" /></label>
+              <label><span data-i18n="slippage">Проскальзывание, тики</span><input id="slippageTicks" type="number" value="0" step="0.1" /></label>
+              <label><span data-i18n="spread">Спред, тики</span><input id="spreadTicks" type="number" value="0" step="0.1" /></label>
+              <label><span data-i18n="latency">Задержка, бары</span><input id="latencyBars" type="number" value="0" /></label>
+              <label><span data-i18n="participation">Доля объёма</span><input id="participationLimit" type="number" min="0.01" max="1" step="0.01" value="0.1" /></label>
+              <label><span data-i18n="impact">Impact, bps</span><input id="marketImpactBps" type="number" value="0" step="0.1" /></label>
+              <label><span data-i18n="rollBps">Ролл, bps</span><input id="rollCostBps" type="number" value="0" step="0.1" /></label>
+              <label><span data-i18n="rollTicks">Ролл, тики</span><input id="rollSlippageTicks" type="number" value="0" step="0.1" /></label>
+              <label><span data-i18n="rollPnlPolicy">PnL на ролле</span><select id="rollPnlPolicy">
+                <option value="reject" data-i18n="rollPnlReject">Остановить расчёт</option>
+                <option value="exclude_gap" data-i18n="rollPnlExclude" selected>Исключить разрыв явно</option>
+              </select></label>
+            </div>
+          </details>
+        </aside>
+
+        <section id="strategyPanel" class="pane editor-pane" hidden>
+          <div class="pane-title editor-toolbar">
+            <div class="strategy-picker"><strong>Strategy</strong><select id="strategyLanguage" title="Язык стратегии"><option value="python">Python SDK</option><option value="javascript">JavaScript</option></select><select id="strategySelect" data-i18n-title="savedStrategy" title="Сохранённая стратегия"></select><button id="newStrategyButton" class="secondary compact" data-i18n-title="newStrategy" title="Новая стратегия">+</button><button id="loadStrategyButton" class="secondary compact" data-i18n="open">Открыть</button></div>
+            <p id="sdkCatalogError" class="source-note" role="alert"></p>
+            <div class="toolbar-actions"><span id="strategyContractSummary" class="badge"></span><button id="metadataButton" class="secondary compact" data-i18n="validate">Проверить</button><button id="downloadSdkSourceButton" data-i18n="downloadPython" class="compact secondary">Скачать .py</button><button id="saveSdkSourceButton" data-i18n="saveCommonSdk" hidden class="compact">Сохранить общий файл SDK</button><button id="saveStrategyButton" class="compact" data-i18n="save">Сохранить</button></div>
+          </div>
+          <p id="strategyCheckStatus" class="source-note" role="status" aria-live="polite"></p>
+          <div class="strategy-meta">
+            <label><span data-i18n="name">Имя</span><input id="strategyName" value="new_strategy" /></label>
+            <label><span data-i18n="tags">Теги</span><input id="strategyTags" placeholder="intraday,sma" /></label>
+          </div>
+          <div id="sdkSourceFiles" hidden class="strategy-meta">
+            <label><span data-i18n="strategySourceFile">Файл сценария</span><select id="sdkSourceFile"></select></label>
+            <p id="sdkSourceLocation" class="source-note"></p>
+          </div>
+          <div id="monacoEditor"></div><textarea id="scriptInput" spellcheck="false"></textarea>
+          <div id="paramControls" class="parameter-grid"></div>
+        </section>
+      </section>
+
+      <div id="resultsResize" class="resize-handle results-resize" role="separator" tabindex="0" aria-orientation="horizontal" aria-valuemin="160" aria-valuemax="700" data-ux-title="resultSize"></div>
+      <section class="result-dock">
+        <nav class="result-tabs" role="tablist" aria-label="Results">
+          <button data-view="overviewView" class="tab active" data-ux="overview">Обзор</button><button data-view="tradesView" class="tab" data-ux="trades">Сделки</button><button data-view="actionsView" class="tab" data-ux="decisions">Решения</button><button data-view="chartsView" class="tab" data-i18n="diagnostics">Диагностика</button><button data-view="researchView" class="tab" data-i18n="research">Исследования</button><button data-view="jobsView" class="tab" data-i18n="runsJobs">Прогоны и задачи</button>
+          <button id="closeResultsButton" class="icon-button secondary" data-ux-title="hideResults">−</button>
+        </nav>
+      <details id="resultsShell" class="results-shell">
+        <summary hidden data-i18n="reports">Отчёты, диагностика и исследования</summary>
+        <div id="resultsEmptyState" class="results-empty" hidden><p data-ux="noReport"></p><button id="emptyStrategyButton" class="secondary compact" data-ux="strategyPanel"></button><button id="emptyHistoryButton" class="secondary compact" data-ux="openHistory"></button></div>
+        <div id="overviewView" class="result-view active"><p id="reportContext" data-ux="noReport">Запустите стратегию или откройте сохранённый прогон.</p><div id="metrics" class="metrics"></div><p data-ux="draftHint"></p><details><summary data-ux="reportParams">Параметры прогона</summary><pre id="reportParams" class="audit-box"></pre></details></div>
+        <div id="tradesView" class="result-view">
+          <div class="trade-tools"><input id="tradeSearch" type="search" data-ux-placeholder="tradeSearch" /><select id="tradeDirection" data-ux-title="tradeDirection"><option value="" data-ux="allTrades">Все</option><option value="long" data-ux="long">Лонг</option><option value="short" data-ux="short">Шорт</option></select><select id="tradeSort"><option value="newest" data-ux="newestFirst">Сначала новые</option><option value="oldest" data-ux="oldestFirst">Сначала старые</option></select><span id="tradeCount" class="badge"></span></div>
+          <p id="tradeSelectionNote" role="status" aria-live="polite"></p><div class="table-grid action-report-grid"><section><div class="report-table-scroll"><table id="tradesTable"></table></div></section></div>
+        </div>
+        <div id="chartsView" class="result-view"><div class="chart-grid">
+          <figure><figcaption data-i18n="drawdown">Просадка</figcaption><canvas id="drawdownChart" height="170"></canvas></figure><figure><figcaption class="position-caption"><span data-i18n="position">Целевая позиция стратегии</span><span class="position-state-key"><span id="positionLongLabel" class="position-long">Лонг: &gt; 0</span><span id="positionFlatLabel" class="position-flat">Вне рынка: 0</span><span id="positionShortLabel" class="position-short">Шорт: &lt; 0</span></span></figcaption><canvas id="positionChart" height="170"></canvas></figure><figure><figcaption data-i18n="costs">Издержки</figcaption><canvas id="costChart" height="160"></canvas></figure><figure><figcaption data-i18n="strategyPlots">Графики стратегии</figcaption><canvas id="plotChart" height="160"></canvas></figure>
+        </div></div>
+        <div id="actionsView" class="result-view"><p class="hint" data-i18n="decisionTimingHint">Время на графике и в таблице — локальное биржевое.</p><div class="table-grid action-report-grid"><section><h2 data-i18n="decisionReport">Решения и действия</h2><div class="report-table-scroll"><table id="decisionsTable"></table></div></section></div></div>
+        <div id="researchView" class="result-view">
+          <div class="research-tools"><label><span data-i18n="grid">Сетка параметров</span><textarea id="sweepGrid" rows="3"></textarea></label><label><span data-i18n="oosSplit">OOS граница</span><input id="splitDate" type="date" /></label><label><span data-i18n="maxRuns">Макс. прогонов</span><input id="maxSweepRuns" type="number" value="100" /></label><button id="sweepButton" data-i18n="runSweep">Запустить sweep</button></div>
+          <div id="researchSummary" class="metrics"></div><div class="table-grid"><section><h2 data-i18n="walkForward">Walk-forward</h2><table id="walkForwardTable"></table></section><section><h2 data-i18n="robustness">Устойчивость</h2><table id="robustnessTable"></table></section><section><h2 data-i18n="guardrails">Guardrails</h2><table id="guardrailsTable"></table></section><section><h2 data-i18n="costStress">Стресс издержек</h2><table id="costStressTable"></table></section></div>
+          <details><summary data-i18n="externalValidation">Внешняя сверка</summary><div class="validation-row"><label>Run id<input id="validationRunId" /></label><label><span data-i18n="statement">Выписка</span><input id="statementPath" /></label><label><span data-i18n="tolerance">Допуск</span><input id="validationTolerance" type="number" value="0.01" step="0.001" /></label><button id="validateButton" class="secondary" data-i18n="validate">Проверить</button></div><pre id="validationBox" class="audit-box"></pre></details>
+        </div>
+        <div id="jobsView" class="result-view"><p id="compareSelectionNote" role="status"></p><div class="jobs-toolbar"><label><span data-i18n="loadRun">Открыть прогон</span><select id="historySelect"></select></label><button id="loadRunButton" class="secondary" data-i18n="open">Открыть</button><label><span data-i18n="compareIds">ID для сравнения</span><input id="compareRunIds" placeholder="run_a,run_b" /></label><button id="compareButton" class="secondary" data-i18n="compare">Сравнить</button><button id="refreshJobsButton" class="icon-button secondary" data-i18n-title="refreshJobs" title="Обновить задачи">&#8635;</button></div><div class="chart-grid"><figure class="chart-wide"><figcaption data-i18n="runComparison">Сравнение прогонов</figcaption><canvas id="compareChart" height="180"></canvas></figure></div><div class="table-grid"><section><h2 data-i18n="jobs">Задачи</h2><table id="jobsTable"></table></section><section><h2 data-i18n="runHistory">История прогонов</h2><table id="historyTable"></table></section><section><h2 data-i18n="comparison">Сравнение</h2><table id="compareTable"></table></section></div></div>
+      </details>
+      </section>
+    </main>
+    <footer class="workbench-status"><span id="statusBox" role="status" aria-live="polite" data-i18n="ready">Готово</span><span id="datasetStatus" class="badge" data-i18n="notSelected">не выбрано</span></footer>
+    <div id="chartContextMenu" class="chart-context-menu" role="menu" hidden><button role="menuitem" data-chart-action="fit" data-ux="resetChart"></button><button role="menuitem" data-chart-action="auto" data-ux="autoScale"></button><button role="menuitem" data-chart-action="focus" data-ux="focusChart"></button><button role="menuitem" data-chart-action="trades" data-ux="trades"></button></div>
+
+    <script src="/workbench_chart_navigation.js"></script>
+    <script src="/vendor/lightweight-charts/lightweight-charts.js"></script><script src="/vendor/monaco/vs/loader.js"></script>
+    <script src="/workbench_i18n.js"></script><script src="/workbench_preferences.js"></script><script src="/workbench_format.js"></script><script src="/workbench_time.js"></script><script src="/workbench_chart_primitives.js"></script><script src="/workbench_chart_series.js"></script><script src="/workbench_charts.js"></script><script src="/workbench_editor_theme.js"></script><script src="/workbench_editor.js"></script><script src="/workbench_api_client.js"></script><script src="/workbench_proxy_settings.js"></script><script src="/workbench_core.js"></script><script src="/workbench_market_chart_data.js"></script><script src="/workbench_market_indicators.js"></script><script src="/workbench_equity_pane.js"></script><script src="/workbench_market_markers.js"></script><script src="/workbench_market_chart.js"></script><script src="/workbench_chart_overlays.js"></script><script src="/workbench_stream_ui.js"></script><script src="/workbench_dataset_build_stream.js"></script><script src="/workbench_data_helpers.js"></script><script src="/workbench_data_binding.js"></script><script src="/workbench_adapter_ui.js"></script><script src="/workbench_quality_ui.js"></script><script src="/workbench_date_range.js"></script><script src="/workbench_history_range.js"></script><script src="/workbench_data_loading.js"></script><script src="/workbench_run_data.js"></script><script src="/workbench_market_data.js"></script><script src="/workbench_data_ui.js"></script><script src="/workbench_strategy_params.js"></script><script src="/workbench_strategy_ui.js"></script><script src="/workbench_decision_report.js"></script><script src="/workbench_ux.js"></script><script src="/workbench_feedback.js"></script><script src="/workbench_strategy_check.js"></script><script src="/workbench_trade_link.js"></script><script src="/workbench_window_geometry.js"></script><script src="/workbench_window_viewport.js"></script><script src="/workbench_windows.js"></script><script src="/workbench_multi_chart.js"></script><script src="/workbench_workspace.js"></script><script src="/workbench_chart_controls.js"></script><script src="/workbench_trade_ui.js"></script><script src="/workbench_history_ui.js"></script><script src="/workbench_run_ui.js"></script><script src="/workbench_research_ui.js"></script><script src="/workbench_portfolio_model.js"></script><script src="/workbench_portfolio_ui.js"></script><script src="/workbench_portfolio_report.js"></script><script src="/app.js"></script>
+  </body>
+</html>

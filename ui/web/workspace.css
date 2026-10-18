@@ -1,0 +1,118 @@
+/* Layout and interaction overrides; colors remain supplied by the selected theme. */
+body { height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+.topbar { position: relative; flex: 0 0 auto; gap: 12px; flex-wrap: wrap; }
+.layout-tools, .sidebar-heading, .trade-tools { display: flex; align-items: center; gap: 5px; }
+.layout-tools .active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.app-shell {
+  --sidebar-width: 440px; --results-height: 290px;
+  flex: 1; min-height: 0; display: grid;
+  grid-template-columns: minmax(0, 1fr) 6px var(--sidebar-width);
+  grid-template-rows: minmax(300px, 1fr) 6px var(--results-height);
+}
+.market-stage { grid-column: 1; grid-row: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; padding: 6px 10px 0; }
+.stage-toolbar { align-items: flex-start; gap: 8px; flex-wrap: wrap; flex: 0 0 auto; min-height: 40px; }
+.market-heading { min-width: 0; flex: 1 0 210px; }
+.market-symbol { display: block; text-align: left; white-space: nowrap; font-size: 13px; padding: 2px 5px; min-height: 28px; max-width: 340px; width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.market-heading span { display: block; font-size: 10px; }
+.chart-tools { gap: 5px; justify-content: flex-start; flex-wrap: wrap; max-width: 100%; }
+.chart-tools .compact-field select { width: 72px; margin: 0; }
+.chart-tools button, .chart-tools summary { font-size: 10px; min-height: 28px; }
+.chart-tools .icon-button { width: 28px; font-size: 17px; }
+.primary-chart { flex: 1; height: auto; min-height: 180px; }
+.chart-empty { z-index: 5; pointer-events: auto; }
+.empty-card { max-width: 420px; padding: 20px; background: var(--surface); border: 1px solid var(--border); text-align: center; }
+.empty-card p { line-height: 1.5; margin: 0 0 12px; }
+.empty-card button { margin-bottom: 12px; }
+.empty-card p:last-child { margin: 0; font-size: 11px; }
+.equity-legend { display: none; }
+.has-equity .equity-legend { display: block; }
+.price-legend { top: 26px; }
+.chart-readout { position: absolute; z-index: 3; top: 5px; left: 9px; right: 90px; overflow: hidden; white-space: nowrap; color: var(--text-soft); font: 10px ui-monospace, Consolas, monospace; pointer-events: none; }
+.market-chart:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.workspace { grid-column: 3; grid-row: 1 / 4; display: flex; flex-direction: column; min-height: 0; overflow: hidden; border-left: 1px solid var(--border); }
+.sidebar-heading { padding: 7px; border-bottom: 1px solid var(--border); flex: 0 0 auto; min-height: 44px; }
+.sidebar-heading strong { flex: 1; font-size: 12px; }
+.sidebar-heading button { font-size: 11px; }
+.setup-pane { flex: 1; min-height: 0; max-height: none; border: 0; padding: 10px 12px; }
+.run-basics { grid-template-columns: 1fr; margin-inline: 0; padding-inline: 0; }
+.editor-pane { flex: 1; min-height: 0; overflow: auto; }
+.editor-pane .pane-title { flex-wrap: wrap; gap: 5px; padding: 8px; }
+.strategy-picker { flex-wrap: wrap; gap: 4px; }
+.strategy-picker select { width: auto; min-width: 0; max-width: 100%; }
+#strategySelect { flex: 1; width: 200px; }
+.toolbar-actions { flex-wrap: wrap; gap: 4px; }
+#strategyContractSummary { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+#sdkCatalogError:empty { display: none; }
+.strategy-meta, .parameter-grid { flex: 0 0 auto; }
+.parameter-grid { order: 1; max-height: 33%; overflow: auto; }
+#monacoEditor, #scriptInput { order: 2; flex: 1 0 220px; min-height: 220px; }
+.resize-handle { touch-action: none; background: var(--surface-soft); }
+.resize-handle:hover, .resize-handle:focus-visible { background: var(--accent); outline: none; }
+.sidebar-resize { grid-column: 2; grid-row: 1 / 4; cursor: col-resize; }
+.results-resize { grid-column: 1; grid-row: 2; cursor: row-resize; }
+.resizing { user-select: none; }
+.resizing .market-chart, .resizing #monacoEditor { pointer-events: none; }
+.result-dock { grid-column: 1; grid-row: 3; display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--surface); }
+.result-tabs { flex: 0 0 auto; overflow-x: auto; min-height: 35px; align-items: center; }
+.result-tabs .tab { white-space: nowrap; padding: 5px 8px; min-height: 30px; font-size: 11px; }
+#closeResultsButton { margin-left: auto; flex: 0 0 28px; }
+.results-shell { min-height: 0; flex: 1; padding: 0 10px 10px; overflow: auto; background: var(--surface); }
+.result-view { padding-top: 8px; }
+.result-view > p { margin: 5px 0 8px; color: var(--text-soft); font-size: 11px; }
+.report-table-scroll { max-height: none; overflow: visible; }
+.action-report-grid section { overflow: visible; }
+.trade-tools { flex-wrap: wrap; margin-bottom: 7px; }
+#tradeSearch { flex: 1; min-width: 140px; margin: 0; }
+.trade-tools select { width: auto; margin: 0; font-size: 11px; }
+.trade-selected { background: var(--accent-soft); }
+.trade-jump { padding: 2px 4px; min-height: 24px; color: var(--accent); background: transparent; border: 0; font-size: 10px; }
+.trade-jump:hover { color: var(--on-accent); }
+#tradesTable td:nth-child(3) { min-width: 0; }
+.table-grid { grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr)); }
+.action-report-grid { display: block; }
+.action-report-grid td:nth-child(3) { min-width: min(300px, 30vw); }
+.table-grid table { min-width: 520px; }
+.table-grid section { overflow: auto; }
+.table-grid th { z-index: 2; }
+.history-selection { display: flex; align-items: center; gap: 8px; }
+.history-selection input { width: auto; margin: 0; }
+#compareSelectionNote { font-size: 11px; color: var(--text-soft); }
+.workbench-status { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 3px 12px; min-height: 25px; border-top: 1px solid var(--border); background: var(--surface-soft); font-size: 11px; }
+.workbench-status #statusBox { flex: 1; }
+.sidebar-closed { grid-template-columns: minmax(0, 1fr) 0 0; }
+.results-closed { grid-template-rows: minmax(300px, 1fr) 0 35px; }
+.results-empty .results-shell .result-view { display: none; }
+.results-empty:not(.results-closed) { grid-template-rows: minmax(300px, 1fr) 6px 130px; }
+.results-empty .results-empty { padding: 8px 0; font-size: 12px; }
+#strategyCheckStatus { margin: 0; padding: 4px 10px; min-height: 20px; }
+.editor-expanded .editor-pane .pane-title { flex-wrap: nowrap; }
+.editor-expanded .strategy-picker { flex: 1; }
+.editor-expanded #strategySelect { width: auto; }
+.chart-focused .result-dock { display: none; }
+.chart-focused { grid-template-rows: minmax(300px, 1fr) 0 0; }
+.shortcut-menu { position: relative; border: 0; }
+.shortcut-menu summary { padding: 6px; border: 1px solid var(--border-strong); border-radius: 4px; }
+.shortcut-menu p { position: absolute; right: 0; top: 30px; z-index: 30; width: min(400px, 80vw); padding: 12px; line-height: 1.6; font-size: 12px; background: var(--surface-raised); border: 1px solid var(--border); }
+.chart-context-menu { position: fixed; z-index: 80; min-width: 170px; padding: 4px; background: var(--surface-raised); border: 1px solid var(--border); }
+.chart-context-menu button { display: block; width: 100%; text-align: left; color: var(--text); background: transparent; border: 0; }
+.chart-context-menu button:hover { background: var(--accent-soft); }
+@media (max-width: 1000px) {
+  .workspace { position: fixed; z-index: 40; top: 85px; bottom: 26px; right: 0; width: min(var(--sidebar-width), 94vw); box-shadow: -4px 0 16px var(--shadow); }
+  .editor-expanded .workspace { width: 94vw; }
+  .app-shell { grid-template-columns: minmax(0, 1fr) 0 0; }
+  .sidebar-resize { display: none; }
+  .topbar { padding-inline: 9px; gap: 5px; }
+  .brand span, #jobBadge { display: none; }
+  .top-actions { margin-left: auto; }
+  .stage-toolbar { flex-direction: row; }
+}
+@media (max-width: 680px) {
+  body { overflow-y: auto; height: auto; min-height: 100dvh; }
+  .app-shell { flex: none; height: max(760px, calc(100dvh - 100px)); }
+  .topbar { position: sticky; }
+  .layout-tools { order: 3; width: 100%; }
+  .indicator-popover { left: auto; right: -80px; max-width: calc(100vw - 20px); }
+  .indicator-row.three, .indicator-row.four { grid-template-columns: 1fr 1fr; }
+  .indicator-row { padding-block: 5px; }
+  .chart-grid { grid-template-columns: 1fr; }
+}
