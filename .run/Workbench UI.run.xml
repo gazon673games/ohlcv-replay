@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Workbench UI" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/ui/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="start" />
+    </scripts>
+    <node-interpreter value="project" />
+    <package-manager value="npm" />
+    <envs>
+      <env name="WORKBENCH_DATA_ROOT" value="$PROJECT_DIR$/data/workbench" />
+      <env name="WORKBENCH_SETTINGS_PATH" value="$PROJECT_DIR$/settings/workbench.json" />
+    </envs>
+    <method v="2" />
+  </configuration>
+</component>

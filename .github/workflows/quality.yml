@@ -1,0 +1,61 @@
+name: quality
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  domain-modules:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: backtest_engine/uv.lock
+      - run: python scripts/check_publication.py
+      - run: uv sync --project backtest_engine --locked
+      - run: uv run --project backtest_engine ruff check data_store continuous_futures_builder moex_iss_adapter
+      - run: uv run --project backtest_engine ruff format --check data_store continuous_futures_builder moex_iss_adapter
+      - run: uv run --project ../backtest_engine python -m pytest tests -q --maxfail=1 --tb=short
+        working-directory: data_store
+      - run: uv run --project ../backtest_engine python -m pytest tests -q --maxfail=1 --tb=short
+        working-directory: continuous_futures_builder
+      - run: uv run --project ../backtest_engine python -m pytest tests -q --maxfail=1 --tb=short -m "not integration"
+        working-directory: moex_iss_adapter
+
+  ui:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    defaults:
+      run:
+        working-directory: ui
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - run: npm ci
+      - run: npm run ui:prepare
+      - run: npm run test:startup
+      - run: npm run test:chart-data

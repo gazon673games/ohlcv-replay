@@ -1,0 +1,33 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 8765,
+    "port_scan_limit": 100,
+    "startup_timeout_ms": 120000
+  },
+  "jobs": {
+    "max_concurrency": 2
+  },
+  "strategies": {
+    "sdk_catalog_path": null
+  },
+  "paths": {
+    "data_root": "data/workbench",
+    "runs_directory": "runs",
+    "datasets_directory": "datasets",
+    "packaged_data_directory": "workbench"
+  },
+  "desktop": {
+    "width": 1440,
+    "height": 920,
+    "min_width": 980,
+    "min_height": 680,
+    "log_file": "workbench.log"
+  },
+  "proxy": {
+    "enabled": false,
+    "url": "localhost:10808",
+    "adapter_ids": [],
+    "all_adapters": false
+  }
+}

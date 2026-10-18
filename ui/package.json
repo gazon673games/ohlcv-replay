@@ -1,0 +1,52 @@
+{
+  "name": "ohlcv-replay-workbench",
+  "version": "0.1.0",
+  "private": true,
+  "author": "OHLCV Replay contributors",
+  "description": "Electron shell for the ohlcv-replay strategy workbench.",
+  "main": "main.js",
+  "scripts": {
+    "ui:prepare": "node prepare-ui.js",
+    "backend:build": "npm run ui:prepare && node build-backend.js",
+    "start": "npm run ui:prepare && node run-electron.js .",
+    "smoke": "npm run ui:prepare && node run-electron.js smoke.js",
+    "test:startup": "node test_backend_launch.js && node test_backend_readiness.js",
+    "test:chart-data": "node test_backend_launch.js && node test_market_chart_data.js && node test_market_chart.js && node test_market_markers.js && node test_chart_controls.js && node test_chart_navigation.js && node test_decision_report.js && node test_stream_ui.js && node test_format.js && node test_strategy_params.js && node test_strategy_ui.js && node test_quality_ui.js && node test_proxy_settings.js && node test_adapter_ui.js && node test_data_helpers.js && node test_dataset_reuse_ui.js && node test_data_loading.js && node test_run_data.js && node test_data_ui_race.js && node test_auto_market_data.js && node test_date_range_ui.js && node test_history_range_ui.js && node test_chart_primitives.js && node test_chart_series.js && node test_theme.js && node test_workspace_interactions.js && node test_strategy_check.js && node test_windows_portfolio.js",
+    "pack": "npm run backend:build && electron-builder --dir",
+    "dist": "npm run backend:build && electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^43.1.0",
+    "electron-builder": "^26.15.3",
+    "monaco-editor": "^0.52.2"
+  },
+  "build": {
+    "appId": "ru.ohlcvreplay.workbench",
+    "productName": "OHLCV Replay Workbench",
+    "directories": {
+      "output": "../dist"
+    },
+    "files": [
+      "main.js",
+      "backend-launch.js",
+      "settings.js",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../build/desktop-backend/dist/backtest-workbench-server",
+        "to": "backend"
+      },
+      {
+        "from": "../settings/workbench.json",
+        "to": "settings/workbench.json"
+      }
+    ],
+    "win": {
+      "target": "nsis"
+    }
+  },
+  "dependencies": {
+    "lightweight-charts": "^5.2.0"
+  }
+}

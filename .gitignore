@@ -1,0 +1,33 @@
+.idea/
+build/
+data/
+dist/
+ui/node_modules/
+ui/web/vendor/
+
+# Domain modules are tracked as pinned Git submodules.
+.opencode
+settings/workbench.local.json
+
+# Local investigation drafts, disposable verification runs, and language caches.
+/.scratch/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Local reference books and per-machine Codex MCP configuration.
+/docs/references/*.pdf
+/.codex/config.toml
+
+# Local algorithms, experiment inputs and original private material.
+/.private-originals/
+/docs/**
+!/docs/**/
+!/docs/dependency_audit.md
+!/docs/local_artifacts.md
+!/docs/mcp_research.md
+!/docs/references/README.md
+!/docs/strategy_catalog.md
+!/docs/strategy_robustness_protocol.md
+!/docs/ui_ux_redesign.md
