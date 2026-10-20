@@ -29,6 +29,10 @@ const WorkbenchFormat = (() => {
       `gaps: ${gap.gap_count ?? "n/a"} expected closures=${gap.expected_closure_count ?? "n/a"}`,
       `repair: ${repair.status || "n/a"}`,
       `rolls: ${roll.roll_count ?? "n/a"} contracts=${roll.contract_count ?? "n/a"}`,
+      ...[...new Set([...(outer.warnings || []), ...(source.warnings || []),
+        ...(source.market_metadata?.instrument_registry_audit?.warnings || []),
+        ...(source.market_metadata?.calendar_audit?.warnings || []),
+      ])].map((item) => `warning: ${item}`),
       ...(outer.violations || []).map((item) => `violation: ${item}`),
     ].join("\n");
   }

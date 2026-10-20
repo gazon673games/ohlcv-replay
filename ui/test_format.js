@@ -31,3 +31,11 @@ assert.equal((metrics.innerHTML.match(/metric-danger/gu) || []).length, 2);
 assert.doesNotMatch(metrics.innerHTML, /sharpe/u);
 
 process.stdout.write("table completeness tests passed\n");
+
+const quality = { textContent: "" };
+context.subject.renderQuality(quality, { approval_status: "warning", market_metadata: {
+  instrument_registry_audit: { warnings: ["Research margin estimate"] },
+  calendar_audit: { warnings: ["Independent calendar required"] },
+} });
+assert.match(quality.textContent, /warning: Research margin estimate/u);
+assert.match(quality.textContent, /warning: Independent calendar required/u);

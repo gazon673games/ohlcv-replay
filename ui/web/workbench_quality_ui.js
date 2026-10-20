@@ -8,7 +8,12 @@ const WorkbenchQualityUI = (() => {
     if (typeof window !== "undefined") {
       window.addEventListener("workbench-strategy-contract-change", update);
     }
-    $("requireQualityGate").addEventListener("change", update);
+    $("requireQualityGate").addEventListener("change", () => {
+      if (state.adapter?.capabilities?.supports_rule_archive && $("rulesEnforcement")) {
+        $("rulesEnforcement").value = $("requireQualityGate").checked ? "strict" : "audit";
+      }
+      update();
+    });
     $("rulesEnforcement")?.addEventListener("change", () => {
       if (!state.adapter?.capabilities?.supports_rule_archive) return;
       $("requireQualityGate").checked = $("rulesEnforcement").value === "strict";
