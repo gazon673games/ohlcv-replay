@@ -21,6 +21,7 @@ const fresh = { ...old, dataset_id: "native-fresh", dataset_path: "native-fresh.
 let datasets = [old];
 let busy = false;
 let gateStatus = "warning";
+let inputIssues = [];
 let changeSelection = false;
 const downloads = [];
 const context = vm.createContext({
@@ -44,7 +45,8 @@ for (const name of ["data_helpers", "run_data"]) {
 vm.runInContext("this.subject = WorkbenchRunData", context);
 context.subject.init({ datasets: () => datasets, sourceTimeframe: () => "240m",
   canPrepare: () => true, busy: () => busy, setBusy: value => { busy = value; },
-  async reloadDatasets() { datasets = [old, { ...fresh, quality_status: gateStatus }]; },
+  async reloadDatasets() { datasets = [old, { ...fresh, quality_status: gateStatus,
+    metadata: { ...fresh.metadata, execution_input_issues: inputIssues } }]; },
 });
 
 (async () => {
@@ -70,6 +72,16 @@ context.subject.init({ datasets: () => datasets, sourceTimeframe: () => "240m",
   datasets = [old]; gateStatus = "rejected";
   await assert.rejects(context.subject.ensure(), /qualityRunBlocked/);
   assert.equal(busy, false);
+  datasets = [{ ...fresh, metadata: { ...fresh.metadata,
+    execution_input_issues: ["TEST: historical margin unavailable"] } }];
+  gateStatus = "warning";
+  assert.equal(context.subject.readiness().dataset, null, "incomplete rules must be rebuilt");
+  await context.subject.ensure();
+  assert.equal(downloads.at(-1).request.rules_enforcement, "audit");
+  inputIssues = ["TEST: historical margin unavailable"];
+  datasets = [old];
+  await assert.rejects(context.subject.ensure(), /historical margin unavailable/);
+  inputIssues = [];
   datasets = [old]; gateStatus = "warning"; changeSelection = true;
   await assert.rejects(context.subject.ensure(), /runSelectionChanged/);
   assert.equal(state.bound, fresh.dataset_path, "changed selection must not bind stale inputs");

@@ -9,7 +9,7 @@ const WorkbenchQualityUI = (() => {
       window.addEventListener("workbench-strategy-contract-change", update);
     }
     $("requireQualityGate").addEventListener("change", () => {
-      if (state.adapter?.capabilities?.supports_rule_archive && $("rulesEnforcement")) {
+      if ($("rulesEnforcement")) {
         $("rulesEnforcement").value = $("requireQualityGate").checked ? "strict" : "audit";
       }
       update();
