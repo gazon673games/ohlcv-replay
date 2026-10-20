@@ -157,3 +157,9 @@ assert.deepStrictEqual({ ...context.helpers.savedHistoryRange([early, newest], {
 assert.equal(context.helpers.matchesDataset({ ...newest, end_ts: "2026-07-21T23:00:00Z" }, chartSelection), false,
   "a requested download end must not claim that the next day was saved");
 console.log("data helper tests passed");
+
+const legacyFields = id => id === "requireQualityGate" ? { checked: false }
+  : { value: id === "rulesEnforcement" ? "strict" : fields[id] };
+assert.equal(context.helpers.buildRequest(legacyFields, "5m").rules_enforcement, "audit");
+const approvedFields = id => id === "requireQualityGate" ? { checked: true } : legacyFields(id);
+assert.equal(context.helpers.buildRequest(approvedFields, "5m").rules_enforcement, "strict");

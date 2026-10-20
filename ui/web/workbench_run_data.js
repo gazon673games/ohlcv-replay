@@ -21,7 +21,8 @@ const WorkbenchRunData = (() => {
     const target = selection();
     // A wider saved file must be clipped through the adapter before execution.
     const items = options.datasets().filter(item =>
-      (item.metadata?.requested_till_date || helpers.datePart(item.end_ts)) === target.till);
+      !item.metadata?.execution_input_issues?.length
+      && (item.metadata?.requested_till_date || helpers.datePart(item.end_ts)) === target.till);
     const compatible = helpers.bestMatchingDataset(items, { ...target,
       requireApproval: $("requireQualityGate").checked,
     });
@@ -45,7 +46,7 @@ const WorkbenchRunData = (() => {
     const snapshot = () => {
       const target = selection();
       return JSON.stringify([target.adapterId, target.engine, target.symbol,
-        target.sourceTimeframe, target.from, target.till]);
+        target.sourceTimeframe, target.from, target.till, $("requireQualityGate").checked]);
     };
     const chosen = snapshot();
     const assertSelection = () => {
@@ -85,6 +86,9 @@ const WorkbenchRunData = (() => {
     assertSelection();
     if (!helpers.qualityAllows(dataset, $("requireQualityGate").checked)) {
       throw new Error(t("qualityRunBlocked", { status: dataset.quality_status || "unknown" }));
+    }
+    if (dataset.metadata?.execution_input_issues?.length) {
+      throw new Error(`${t("runDatasetIncomplete")} ${dataset.metadata.execution_input_issues.slice(0, 5).join("; ")}`);
     }
     state.runDataset = dataset;
     WorkbenchDataBinding.bindDataset(dataset);

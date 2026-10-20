@@ -196,6 +196,9 @@ const WorkbenchDataHelpers = (() => {
   }
 
   function buildRequest(get, sourceTimeframe, sourceDelayMinutes = 0) {
+    const approved = get("requireQualityGate")?.checked;
+    const enforcement = typeof approved === "boolean" ? (approved ? "strict" : "audit")
+      : get("rulesEnforcement")?.value || "audit";
     return {
       adapter_id: get("adapterSelect").value,
       engine: get("engineSelect").value,
@@ -211,7 +214,7 @@ const WorkbenchDataHelpers = (() => {
       roll_rule: get("rollRule").value || null,
       source_delay_minutes: sourceDelayMinutes,
       rules_path: get("rulesPath")?.value?.trim() || null,
-      rules_enforcement: get("rulesEnforcement")?.value || "audit",
+      rules_enforcement: enforcement,
       history_source: get("historySource")?.value || "auto",
       archive_fallback_policy: get("archiveFallbackPolicy")?.value || "missing_only",
     };

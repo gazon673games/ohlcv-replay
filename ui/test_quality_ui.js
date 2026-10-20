@@ -85,3 +85,8 @@ assert.equal(elements.rulesEnforcement.value, "audit");
 elements.requireQualityGate.checked = true;
 elements.requireQualityGate.listener();
 assert.equal(elements.rulesEnforcement.value, "strict");
+
+state.adapter = { capabilities: { supports_rule_archive: false } };
+elements.requireQualityGate.checked = false;
+elements.requireQualityGate.listener();
+assert.equal(elements.rulesEnforcement.value, "audit", "hidden legacy fields must follow the research checkbox");
