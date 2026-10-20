@@ -77,3 +77,11 @@ assert.match(elements.qualityModeNote.textContent, /nextRunData \(1m\)/);
 assert.match(elements.qualityModeNote.textContent, /chartQualitySeparate/);
 assert.match(elements.runButton.title, /native_1m/);
 process.stdout.write("quality gate UI tests passed\n");
+
+state.adapter = { capabilities: { supports_rule_archive: true } };
+elements.requireQualityGate.checked = false;
+elements.requireQualityGate.listener();
+assert.equal(elements.rulesEnforcement.value, "audit");
+elements.requireQualityGate.checked = true;
+elements.requireQualityGate.listener();
+assert.equal(elements.rulesEnforcement.value, "strict");
